@@ -1,0 +1,76 @@
+.model small
+.stack 100H
+.386
+
+.data
+DATA dw 0000H
+msg1 db 10, 13, "Enter the first no: $"
+msg2 db 10, 13, "Enter the second no: $"
+msg3 db 10, 13, "The sum is: $"
+
+.code
+.startup
+MOV AH, 09
+MOV DX, OFFSET msg1
+INT 21H
+
+; Input first number
+MOV BX, 0
+MOV CX, 4
+AGAIN: MOV AH, 01
+INT 21H
+CMP AL, 'A'
+JGE L2
+SUB AL, 30H
+SHL BX, 4
+ADD BL, AL
+LOOP AGAIN
+
+MOV DATA, BX
+
+MOV AH, 09
+MOV DX, OFFSET msg2
+INT 21H
+
+; Input second number
+MOV BX, 0
+MOV CX, 4
+AGAIN2: MOV AH, 01
+INT 21H
+CMP AL, 'A'
+JGE L2
+SUB AL, 30H
+SHL BX, 4
+ADD BL, AL
+LOOP AGAIN2
+
+MOV AX, DATA
+
+MOV CX, 0
+ADD AL, BL
+DAA
+MOV BL, AL
+
+ADC AH, BH
+MOV AL, AH
+DAA
+MOV BH, AL
+
+MOV AH, 09
+MOV DX, OFFSET msg3
+INT 21H
+
+MOV DX, 0
+MOV CX, 4
+AGAIN3: ROL BX, 4
+MOV DL, BL
+AND DL, 0FH
+ADD DL, 30H
+MOV AH, 02
+INT 21H
+LOOP AGAIN3
+
+MOV AH, 4CH
+INT 21H
+L2: .exit
+end

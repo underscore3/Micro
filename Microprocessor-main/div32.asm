@@ -1,0 +1,105 @@
+.model small
+.stack 100H
+.386
+
+.data
+DATA1 dd 00000000H
+DATA2 dd 00000000H
+REM dd ?
+QUO dd ?
+msg1 db 10, 13, "Enter the first no: $"
+msg2 db 10, 13, "Enter the second no: $"
+msg3 db 10, 13, "The remainder is: $"
+msg4 db 10, 13, "The quotient is: $"
+
+.code
+.startup
+MOV AH, 09
+MOV DX, OFFSET msg1
+INT 21H
+
+; Input first number
+MOV EBX, 0
+MOV CX, 8
+AGAIN: MOV AH, 01
+INT 21H
+CMP AL, 'A'
+JGE P1
+SUB AL, 30H
+JMP P2
+P1: SUB AL, 37H
+P2: SHL EBX, 4
+ADD BL, AL
+LOOP AGAIN
+
+MOV DATA1, EBX
+
+MOV AH, 09
+MOV DX, OFFSET msg2
+INT 21H
+
+; Input second number
+MOV EBX, 0
+MOV CX, 8
+AGAIN2: MOV AH, 01
+INT 21H
+CMP AL, 'A'
+JGE P3
+SUB AL, 30H
+JMP P4
+P3: SUB AL, 37H
+P4: SHL EBX, 4
+ADD BL, AL
+LOOP AGAIN2
+
+MOV DATA2, EBX
+
+MOV EBX, 0
+MOV EDX, 0
+MOV EAX, 0
+MOV EAX, DATA1
+MOV EBX, DATA2
+DIV EBX
+MOV REM, EDX
+MOV QUO, EAX
+
+MOV AH, 09
+MOV DX, OFFSET msg3
+INT 21H
+
+MOV EBX, REM
+MOV CX, 8
+AGAIN3: ROL EBX, 4
+MOV DL, BL
+AND DL, 0FH
+CMP DL, 09
+JG P5
+ADD DL, 30H
+JMP P6
+P5: ADD DL, 37H
+P6: MOV AH, 02
+INT 21H
+LOOP AGAIN3
+
+MOV AH, 09
+MOV DX, OFFSET msg4
+INT 21H
+
+MOV EBX, QUO
+MOV CX, 8
+AGAIN4: ROL EBX, 4
+MOV DL, BL
+AND DL, 0FH
+CMP DL, 09
+JG P7
+ADD DL, 30H
+JMP P8
+P7: ADD DL, 37H
+P8: MOV AH, 02
+INT 21H
+LOOP AGAIN4
+
+MOV AH, 4CH
+INT 21H
+.exit
+end

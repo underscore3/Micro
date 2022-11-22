@@ -1,0 +1,101 @@
+.model small
+.stack 100H
+.386
+
+.data
+num1 dd 00000000H
+num2 dd 00000000H
+num3 dd 00000000H
+msg1 db 10, 13, "Enter the first no: $"
+msg2 db 10, 13, "Enter the second no: $"
+msg3 db 10, 13, "The sum is: $"
+
+.code
+.startup
+MOV AH, 09
+MOV DX, OFFSET msg1
+INT 21H
+
+; Input first number
+MOV EBX, 0
+MOV CX, 8
+AGAIN: MOV AH, 01
+INT 21H
+CMP AL, 'A'
+JGE L2
+SUB AL, 30H
+SHL EBX, 4
+ADD BL, AL
+LOOP AGAIN
+
+MOV num1, EBX
+
+MOV AH, 09
+MOV DX, OFFSET msg2
+INT 21H
+
+; Input second number
+MOV EBX, 0
+MOV CX, 8
+AGAIN2: MOV AH, 01
+INT 21H
+CMP AL, 'A'
+JGE L2
+SUB AL, 30H
+SHL EBX, 4
+ADD BL, AL
+LOOP AGAIN2
+
+MOV num2, EBX
+
+MOV AX, WORD PTR num1
+MOV DX, WORD PTR num2
+
+ADD AL, DL
+DAA
+MOV BL, AL
+
+MOV AL, AH
+ADC AL, DH
+DAA
+MOV BH, AL
+
+MOV WORD PTR num3, BX
+
+MOV AX, WORD PTR num1+2
+MOV DX, WORD PTR num2+2
+
+ADC AL, DL
+DAA
+MOV BL, AL
+
+MOV AL, AH
+ADC AL, DH
+DAA
+MOV BH, AL
+
+MOV WORD PTR num3+2, BX
+MOV EBX, num3
+
+MOV AH, 09
+MOV DX, OFFSET msg3
+INT 21H
+
+JNC L6
+MOV AH, 02H
+MOV DL, '1'
+INT 21H
+
+L6: MOV CX, 8
+AGAIN3: ROL EBX, 4
+MOV DL, BL
+AND DL, 0FH
+ADD DL, 30H
+MOV AH, 02
+INT 21H
+LOOP AGAIN3
+
+MOV AH, 4CH
+INT 21H
+L2: .exit
+end

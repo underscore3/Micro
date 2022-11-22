@@ -1,0 +1,30 @@
+.model small
+.data
+INPUT DB 10, 13, "Enter a no: $"
+OUTPUT DB 10, 13, "Binary is: $"
+
+.code
+.startup
+MOV DX, OFFSET INPUT
+MOV AH, 09H
+INT 21H
+
+MOV AH, 01H
+INT 21H
+MOV BL, AL
+
+MOV DX, OFFSET OUTPUT
+MOV AH, 09H
+INT 21H
+
+MOV CL, 08H
+MOV AH, 00H
+L1: SHL BL, 01H
+MOV AL, 00H
+ADC AL, 30H
+MOV DL, AL
+MOV AH, 02H
+INT 21H
+LOOP L1
+.EXIT
+END

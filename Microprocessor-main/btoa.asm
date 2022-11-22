@@ -1,0 +1,30 @@
+.model small
+.data
+INPUT DB 10, 13, "Enter binary no: $"
+OUTPUT DB 10, 13, "The ASCII character is: $"
+ARR DB ?
+
+.code
+.startup
+MOV AH, 09H
+MOV DX, OFFSET INPUT
+INT 21H
+
+MOV BL, 00H
+MOV CL, 08H
+INPUT1: MOV AH, 01H
+INT 21H
+SUB AL, 30H
+SHL BL, 1
+ADD BL, AL
+LOOP INPUT1
+
+MOV AH, 09H
+MOV DX, OFFSET OUTPUT
+INT 21H
+
+MOV AH, 02H
+MOV DL, BL
+INT 21H
+.EXIT
+END
